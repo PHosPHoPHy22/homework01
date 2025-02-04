@@ -1,0 +1,67 @@
+from collections import deque
+def create_word_graph(words):
+    """
+    Создает граф, где узлы - это слова, а ребра соединяют слова,
+    отличающиеся только одной буквой.
+    Args:
+        words: Список слов.
+    Returns:
+        Словарь, представляющий граф. Ключи - слова, значения - списки
+        соседних слов.
+    """
+    graph = {}
+    for word in words:
+        graph[word] = []
+    for word1 in words:
+        for word2 in words:
+            if word1 != word2 and edit_distance_one(word1, word2):
+                graph[word1].append(word2)
+    return graph
+def edit_distance_one(word1, word2):
+    """
+    Проверяет, отличаются ли два слова только одной буквой.
+    Args:
+        word1: Первое слово.
+        word2: Второе слово.
+    Returns:
+        True, если слова отличаются только одной буквой, False в противном случае.
+    """
+    if len(word1) != len(word2):
+        return False
+    diff_count = 0
+    for i in range(len(word1)):
+        if word1[i] != word2[i]:
+            diff_count += 1
+    return diff_count == 1
+def shortest_path(graph, start, end):
+    """
+    Находит кратчайший путь от start к end в графе, используя поиск в ширину (BFS).
+    Args:
+        graph: Словарь, представляющий граф.
+        start: Начальный узел.
+        end: Конечный узел.
+    Returns:
+        Список, представляющий кратчайший путь от start к end, или None,
+        если путь не найден.
+    """
+    queue = deque([(start, [start])]) # Очередь: (узел, путь до узла)
+    visited = set()
+    while queue:
+        (node, path) = queue.popleft()
+        if node == end:
+            return path
+        if node not in visited:
+            visited.add(node)
+            for neighbor in graph[node]:
+                queue.append((neighbor, path + [neighbor]))
+    return None # Путь не найден
+# Пример использования:
+words = ["cab", "car", "cat", "bat", "bar", "mat"]
+graph = create_word_graph(words)
+start_word = "cab"
+end_word = "bat"
+path = shortest_path(graph, start_word, end_word)
+if path:
+    print(f"Кратчайший путь от '{start_word}' к '{end_word}': {path}")
+else:
+    print(f"Путь от '{start_word}' к '{end_word}' не найден.")
