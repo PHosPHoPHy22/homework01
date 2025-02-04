@@ -1,0 +1,54 @@
+def generate_multiplication_table(arr):
+    """
+    Генерирует таблицу умножения для всех элементов массива.
+    Args:
+        arr: Массив чисел.
+    Returns:
+        Двумерный массив (список списков), представляющий таблицу умножения.
+        Каждая строка соответствует элементу из входного массива, умноженному
+        на все элементы входного массива.
+    """
+    table = []
+    for multiplier in arr:
+        row = []
+        for element in arr:
+            row.append(multiplier * element)
+        table.append(row)
+    return table
+def get_array_from_user():
+    """
+    Запрашивает у пользователя числа для создания массива.
+    Returns:
+        Список чисел, введенных пользователем.
+    """
+    arr = []
+    while True:
+        try:
+            num_str = input("Введите число (или 'стоп' для завершения ввода): ")
+            if num_str.lower() == "стоп":
+                break
+            num = float(num_str) # Преобразуем в float, чтобы принимать и целые, и дробные числа
+            arr.append(num)
+        except ValueError:
+            print("Некорректный ввод. Введите число или 'стоп'.")
+    return arr
+def print_formatted_table(table):
+    """
+    Выводит таблицу умножения в форматированном виде.
+    Args:
+        table: Двумерный массив (список списков), представляющий таблицу.
+    """
+    for row in table:
+        formatted_row = [str(x).rjust(6) for x in row] # Регулируем ширину поля (6)
+        print(" ".join(formatted_row))
+# 1. Получаем массив чисел от пользователя:
+my_array = get_array_from_user()
+# 2. Проверяем, что массив не пустой:
+if not my_array:
+    print("Массив пуст. Невозможно создать таблицу умножения.")
+else:
+    # 3. Генерируем таблицу умножения:
+    multiplication_table = generate_multiplication_table(my_array)
+    # 4. Выводим таблицу:
+    print("\nТаблица умножения:")
+    print_formatted_table(multiplication_table)
