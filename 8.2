@@ -1,0 +1,89 @@
+def greedy_travel_planner(attractions, max_days):
+    """
+    Планирует поездку по Европе, используя жадную стратегию для максимизации
+    суммарной стоимости посещенных достопримечательностей в рамках
+    ограниченного времени.
+    Args:
+        attractions: Список словарей, где каждый словарь представляет
+                     достопримечательность и содержит ключи:
+                       "name": Название достопримечательности (строка).
+                       "value": Стоимость (насколько интересно увидеть, число).
+                       "days": Продолжительность посещения (число дней).
+        max_days: Максимальное количество дней для поездки (число).
+    Returns:
+        Словарь, содержащий:
+            "schedule": Список названий выбранных достопримечательностей.
+            "total_value": Суммарная стоимость выбранных достопримечательностей.
+            "total_days": Общая продолжительность посещения выбранных достопримечательностей.
+    """
+    # Сортируем достопримечательности по убыванию "ценности за день".
+    # Это и есть наша жадная стратегия.
+    sorted_attractions = sorted(
+        attractions, key=lambda x: x["value"] / x["days"], reverse=True
+    )
+    schedule = []
+    total_value = 0
+    total_days = 0
+    for attraction in sorted_attractions:
+        if total_days + attraction["days"] <= max_days:
+            schedule.append(attraction["name"])
+            total_value += attraction["value"]
+            total_days += attraction["days"]
+    return {
+        "schedule": schedule,
+        "total_value": total_value,
+        "total_days": total_days,
+    }
+def get_attraction_from_user():
+    """
+    Запрашивает у пользователя данные о достопримечательности.
+    Returns:
+        Словарь с данными о достопримечательности (name, value, days).
+    """
+    name = input("Введите название достопримечательности: ")
+    while True:
+        try:
+            value = int(input("Введите стоимость (целое число): "))
+            if value <= 0:
+                print("Стоимость должна быть положительным числом.")
+            else:
+                break
+        except ValueError:
+            print("Некорректный ввод. Введите целое число.")
+    while True:
+        try:
+            days = int(input("Введите продолжительность посещения (целое число дней): "))
+            if days <= 0:
+                print("Продолжительность должна быть положительным числом.")
+            else:
+                break
+        except ValueError:
+            print("Некорректный ввод. Введите целое число.")
+    return {"name": name, "value": value, "days": days}
+# Получаем данные от пользователя
+attractions = []
+while True:
+    add_another = input("Хотите добавить достопримечательность? (да/нет): ").lower()
+    if add_another == "да":
+        attraction = get_attraction_from_user()
+        attractions.append(attraction)
+    elif add_another == "нет":
+        break
+    else:
+        print("Пожалуйста, введите 'да' или 'нет'.")
+# Получаем максимальное количество дней от пользователя
+while True:
+    try:
+        max_days = int(input("Введите максимальное количество дней для поездки: "))
+        if max_days <= 0:
+            print("Количество дней должно быть положительным числом.")
+        else:
+            break
+    except ValueError:
+        print("Некорректный ввод. Введите целое число.")
+# Планируем поездку и выводим результаты
+plan = greedy_travel_planner(attractions, max_days)
+print("\nРекомендуемый план поездки:")
+print(f"Достопримечательности: {plan['schedule']}")
+print(f"Общая ценность: {plan['total_value']}")
+print(f"Общая продолжительность: {plan['total_days']} дней")
